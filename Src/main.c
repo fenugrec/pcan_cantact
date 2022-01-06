@@ -84,11 +84,48 @@ void SysTick_Handler( void )
   HAL_IncTick();
 }
 
+void cannette_init(void) {
+#if BOARD==cannette
+	#define nCANSTBY_Port GPIOC
+	#define nCANSTBY_Pin GPIO_PIN_14	/* control xceiver standby, active low */
+
+	#define nSI86EN_Port GPIOC
+	#define nSI86EN_Pin GPIO_PIN_13		/* enable power to Si86xx isolater, active low */
+
+	#define DCDCEN_Port GPIOC
+	#define DCDCEN_Pin GPIO_PIN_15		/* activate DCDC converter, active high */
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+
+	GPIO_InitTypeDef GPIO_InitStruct;
+	HAL_GPIO_WritePin(nCANSTBY_Port, nCANSTBY_Pin, GPIO_PIN_SET);
+	GPIO_InitStruct.Pin = nCANSTBY_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(nCANSTBY_Port, &GPIO_InitStruct);	//xceiver active.
+
+	HAL_GPIO_WritePin(DCDCEN_Port, DCDCEN_Pin, GPIO_PIN_SET);
+	GPIO_InitStruct.Pin = DCDCEN_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(DCDCEN_Port, &GPIO_InitStruct);	//start DCDC (TODO : wait until enumerated)
+
+	HAL_GPIO_WritePin(nSI86EN_Port, nSI86EN_Pin, GPIO_PIN_RESET);
+	GPIO_InitStruct.Pin = nSI86EN_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(nSI86EN_Port, &GPIO_InitStruct);	//enable si86
+#endif
+}
+
 int main( void )
 {
   HAL_Init();
 
   SystemClock_Config();
+  cannette_init();
 
   pcan_usb_init();
   pcan_led_init();

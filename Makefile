@@ -137,7 +137,7 @@ LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BU
 .PHONY : all
 
 # default action: build all
-all: cantact-16 cantact-8 entree canable
+all: cantact-16 cantact-8 entree canable cannette
 
 cantact-16: 
 	$(MAKE) BOARD=cantact-16 DEBUG=0 OPT=-Os BOARD_FLAGS='-DEXTERNAL_CLOCK=16 -DHSE_VALUE=16000000' elf hex bin
@@ -150,6 +150,9 @@ entree:
 
 canable: 
 	$(MAKE) BOARD=canable DEBUG=0 OPT=-Os elf hex bin
+
+cannette:
+	$(MAKE) BOARD=cannette DEBUG=0 OPT=-Os elf hex bin
 
 #######################################
 # build the application

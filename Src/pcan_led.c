@@ -13,9 +13,19 @@ static struct
 }
 led_mode_array[LED_TOTAL] = { 0 };
 
+#if BOARD==cannette
+	#define IOPIN_PORT GPIOA
+	#define IOPIN_RX GPIO_PIN_9	/* RX: green */
+	#define IOPIN_MODE GPIO_MODE_OUTPUT_OD
+	#define LED1_Active_High 0
+
+	#define IOPIN_TX GPIO_PIN_8	/* TX: red */
+	#define LED2_Active_High 0
+#else
 #define IOPIN_TX    GPIO_PIN_1
 #define IOPIN_RX    GPIO_PIN_0
 #define IOPIN_PORT  GPIOB
+#endif
 
 void pcan_led_init( void )
 {
@@ -24,7 +34,7 @@ void pcan_led_init( void )
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   GPIO_InitStruct.Pin = IOPIN_TX |IOPIN_RX;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Mode = IOPIN_MODE;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init( IOPIN_PORT, &GPIO_InitStruct );
